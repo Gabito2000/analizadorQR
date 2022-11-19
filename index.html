@@ -1,0 +1,77 @@
+<html>
+<head>
+    <title>DEMO Reed qr codes</title>
+<body>
+    <div id="qr-reader" style="width:500px"></div>
+    <div id="qr-reader-results"></div>
+    <!--button on clic execute downloadCSVFromHTTP-->
+    <button onclick="downloadCSVFromHTTP()">Download CSV</button>
+</body>
+<script src="/html5-qrcode.min.js"></script>
+<script src="https://unpkg.com/html5-qrcode@2.0.9/dist/html5-qrcode.min.js"></script>
+<script>
+    function downloadCSVFromHTTP(fn) {
+        console.log("downloadExcelFromHTTP");
+        //http is http://127.0.0.1:8000/excel
+        var http = new XMLHttpRequest();
+        http.open('GET', 'http://127.0.0.1:8000/excel', true);
+        http.responseType = 'blob';
+        http.onload = function(e) {
+            if (this.status == 200) {
+                var blob = this.response;
+                var link = document.createElement('a');
+                link.href = window.URL.createObjectURL(blob);
+                link.download = 'excel.csv';
+
+                link.click();
+            }
+        };
+        http.send();
+    }
+
+    function docReady(fn) {
+        // see if DOM is already available
+        if (document.readyState === "complete"
+            || document.readyState === "interactive") {
+            // call on next available tick
+            setTimeout(fn, 1);
+        } else {
+            document.addEventListener("DOMContentLoaded", fn);
+        }
+    }
+
+    docReady(function () {
+        var resultContainer = document.getElementById('qr-reader-results');
+        var lastResult, countResults = 0;
+        function onScanSuccess(decodedText, decodedResult) {
+            if (decodedText !== lastResult) {
+                ++countResults;
+                lastResult = decodedText;
+                // Handle on success condition with the decoded message.
+                console.log(`Scan result ${decodedText}`, decodedResult);
+                //Adds the result to qr-reader-results
+                resultContainer.innerHTML += `<div>[${countResults}] - ${decodedText}</div>`;
+
+                //Adds the result to a fastappi database http://127.0.0.1:8000/add_person
+                //person nombre: str cargo: str entrada: str salida: str
+                var person = {
+                    nombre: decodedText,
+                    cargo: "cargo",
+                    entrada: "entrada",
+                    salida: "salida"
+                };
+                var xhttp = new XMLHttpRequest();
+                xhttp.open("POST", "http://127.0.0.1:8000/add_person", true);
+                xhttp.setRequestHeader("Content-type", "application/json");
+                xhttp.send(JSON.stringify(person));
+                
+            }
+        }
+
+        let html5QrcodeScanner = new Html5QrcodeScanner(
+            "qr-reader", { fps: 10, qrbox: 250 });
+        html5QrcodeScanner.render(onScanSuccess);
+    });
+</script>
+</head>
+</html>
