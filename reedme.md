@@ -7,5 +7,5 @@ python -m PyInstaller --onefile program.py
 HOW TO build 
 pip install -r requirements.txt
 
-How to Compile
-pyinstaller --noconfirm --onedir --console --collect-all flasgger "./main.py"
+HOW TO COMPILE
+python -m pyinstaller --noconfirm --onedir --console --collect-all flasgger "./main.py"
