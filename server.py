@@ -40,4 +40,4 @@ def read_root():
 #returns qr librery
 @app.route("/getLibrery", methods=["GET"])
 def getLibrery():
-    return open("node_modules\html5-qrcode\html5-qrcode.min.js", "r").read()
+    return open("node_modules/html5-qrcode/html5-qrcode.min.js", "r").read()

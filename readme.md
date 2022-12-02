@@ -1,5 +1,8 @@
-HOW TO RUN
-uvicorn main:app --reload
+HOW TO RUN THE SERVER
+uvicorn main:app --host 0.0.0.0 --port 10000
+
+HOW TO RUN THE SERVEER 
+python main.py
 
 CREATE THE EXECUTABLE
 python -m PyInstaller --onefile program.py
