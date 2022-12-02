@@ -1,47 +1,30 @@
 #https://www.peopleperhour.com/freelance-jobs/technology-programming/programming-coding/i-need-a-weather-python-program-coded-3729938
-from fastapi import FastAPI
-from pydantic import BaseModel
-import math 
-import numpy as np
-from fastapi.responses import HTMLResponse
+import os
+import threading
+import time
+from server import app
 
-app = FastAPI()
+def executeServer():
+    #runs app 
+    app.run(port=8000, debug=True, use_reloader=False, threaded=True, host="127.0.0.1")
 
-class Person(BaseModel):
-    nombre: str
-    cargo: str
-    entrada: str
-    salida: str
+def executeClient():
+    #wait for server to start
+    print("Waiting for server to start")
+    time.sleep(5)
+    os.system("start http://127.0.0.1:8000")
 
-def PersonToCSV(json):
-    return f"{json.nombre},{json.cargo},{json.entrada},{json.salida}"
+threading.Thread(target=executeClient).start()
+threading.Thread(target=executeServer).start()
 
-
-
-#adds person to a excel file person comes as a string
-@app.post("/add_person")
-def add_person(person: Person):
-    #open file
-    file = open("database.csv", "a")
-    #write person
-    file.write(PersonToCSV(person) + "\n")
-    #close file
-    file.close()
-    return {"message": "Persona agregada"}
-
-#returns the excel file
-@app.get("/excel")
-def excel():
-    file = open("database.csv", "r")
-    return HTMLResponse(content=file.read(), status_code=200)
-
-#returns index.html
-@app.get("/")
-def read_root():
-    #index.html is in the same folder as main.py
-    html_content =  open("index.html", "r").read()
-    return HTMLResponse(content=html_content, status_code=200)
+#exit with q
+print ("Press q to exit all threads")
+while True:
+    time.sleep(1)
+    if input() == "q":
+        os._exit(0)
 
 
 
-    
+#q: how to distribute this code on a docker container?
+#a: https://www.youtube.com/watch?v=Q5POuMHxW-0
